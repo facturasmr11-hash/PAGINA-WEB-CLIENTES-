@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control MR - Mantenimiento de Restaurantes</title>
+    <!-- Importando fuente moderna similar a la de la foto -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === VARIABLES Y RESET === */
+        :root {
+            --bg-dark: #000000;
+            --bg-gray: #2d2d2d;
+            --bg-light-gray: #444444;
+            --text-light: #ffffff;
+            --text-muted: #d0d0d0;
+            --text-dark: #000000;
+            --accent-green: #25D366;
+            --overlay: rgba(0, 0, 0, 0.60);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* === BARRA DE NAVEGACIÓN === */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--bg-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+
+        .logo img {
+            height: 55px;
+            object-fit: contain;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-links a:hover {
+            color: #999999;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 2px;
+            background-color: var(--text-light);
+            transition: 0.3s;
+        }
+
+        /* === SECCIÓN HERO (Fondo que abarca todo) === */
+        .hero {
+            position: relative;
+            height: 60vh; 
+            min-height: 400px;
+            background-image: url('fondo principal.jpg'), url('fondo principal.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin-top: 85px; 
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--overlay);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1000px;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+        }
+        
+        .hero-logo {
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .hero-content p {
+            font-family: 'Inter', sans-serif;
+            font-size: 4.5rem; 
+            font-weight: 900; 
+            letter-spacing: 2px;
+            line-height: 1.1;
+            color: var(--text-light);
+            text-transform: uppercase;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.8); 
+        }
+
+        /* === SECCIÓN BANNER GRIS (Quiénes Somos) === */
+        .about-banner {
+            background-color: var(--bg-gray);
+            /* Reducido de 80px a 40px en la parte inferior para juntarlo con Clientes */
+            padding: 40px; 
+            text-align: center;
+            position: relative;
+        }
+
+        .about-banner h2 {
+            font-size: 2.0rem;
+            font-weight: 600;
+            margin-bottom: 50px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* === NUEVO RECUADRO DE PROPÓSITO === */
+        .purpose-container {
+            max-width: 1200px;
+            margin: 0 auto 30px auto; 
+            display: flex;
+        }
+
+        .purpose-card {
+            width: 100%; 
+            text-align: center; 
+        }
+
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .info-card {
+            background-color: var(--text-light);
+            color: var(--text-dark);
+            padding: 40px 30px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 300px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            transition: transform 0.3s ease;
+            text-align: justify;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--bg-gray);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .info-card p, .info-card ul {
+            font-size: 1.1rem;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .info-card ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .info-card li {
+            margin-bottom: 8px;
+        }
+
+        /* === SECCIÓN CLIENTES (Nueva) === */
+        .clientes-section {
+            background-color: var(--bg-dark);
+            /* Reducido de 80px a 40px para que no haya huecos gigantes */
+            padding: 40px; 
+            text-align: center;
+        }
+
+        .clientes-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* === SECCIÓN TRABAJOS REALIZADOS === */
+        .portfolio-section {
+            background-color: var(--bg-gray);
+            /* Reducido de 80px a 40px */
+            padding: 40px; 
+            text-align: center;
+        }
+
+        .portfolio-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-light);
+        }
+
+        /* === SECCIÓN CARRUSEL DE SERVICIOS === */
+        .services-section {
+            /* Reducido de 80px a 40px */
+            padding: 40px; 
+            background-color: var(--bg-dark); 
+        }
+
+        .services-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .carousel-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 30px;
+            padding-bottom: 20px;
+            scroll-snap-type: x mandatory;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .carousel-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .carousel-container::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        .service-card {
+            flex: 0 0 320px;
+            background-color: var(--bg-gray);
+            border-radius: 8px;
+            overflow: hidden;
+            scroll-snap-align: start;
+            text-decoration: none;
+            color: var(--text-light);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .portfolio-section .service-card {
+            background-color: var(--bg-dark);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .service-image {
+            width: 100%;
+            height: 220px;
+            background-color: #111;
+            background-image: url('http://googleusercontent.com/image_collection/image_retrieval/12885396226090738556_0'); 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .service-image::after {
+             content: '';
+             position: absolute;
+             top: 0; left: 0; right: 0; bottom: 0;
+             background-color: rgba(0,0,0,0.4);
+        }
+
+        .service-info {
+            padding: 25px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .service-info h4 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .service-info p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* === FOOTER MODIFICADO === */
+        footer {
+            background-color: var(--bg-light-gray);
+            padding: 50px 40px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: 1px solid #555;
+            width: 100%;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly; 
+            width: 100%;
+            max-width: 1200px;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .social-icons a svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--text-light);
+            opacity: 0.8;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .social-icons a:hover svg {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* === BOTÓN WHATSAPP FLOTANTE === */
+        .whatsapp-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--accent-green);
+            color: white;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+        }
+
+        .whatsapp-btn::before {
+            content: "Contáctanos";
+            position: absolute;
+            right: 80px; 
+            background-color: var(--bg-gray);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transform: translateX(10px);
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .whatsapp-btn:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .whatsapp-btn svg {
+            width: 38px;
+            height: 38px;
+            fill: currentColor;
+        }
+
+        /* === RESPONSIVO === */
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 85px;
+                left: 0;
+                width: 100%;
+                background-color: var(--bg-dark);
+                flex-direction: column;
+                padding: 20px;
+                text-align: center;
+                border-bottom: 1px solid #222;
+            }
+            .nav-links.active { display: flex; }
+            .hamburger { display: flex; }
+            .hero-content p { font-size: 2.5rem; }
+            /* Secciones en móviles también reducidas a 40px */
+            .about-banner, .clientes-section, .portfolio-section, .services-section { padding: 40px 20px; }
+            .cards-container { flex-direction: column; }
+            .info-card { min-width: 100%; }
+            .contact-info { flex-direction: column; gap: 20px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <header>
+        <div class="logo">
+            <img src="logoo.jpeg" alt="Logo MR Mantenimiento de Restaurantes">
+        </div>
+        
+        <div class="nav-container">
+            <nav class="nav-links" id="navMenu">
+                <a href="#inicio">Inicio</a>
+                <a href="#servicios">Servicios 
+                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style="margin-left:4px;">
+                        <path d="M1 1L5 5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+                <a href="#nosotros">Nosotros</a>
+                <a href="#clientes">Clientes</a>
+                <a href="#trabajos">Proyectos</a>
+                <a href="#contacto">Contáctanos</a>
+            </nav>
+            
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECCIÓN HERO -->
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <p>MANTENIMIENTO PROFESIONAL PARA TU RESTAURANTE</p>
+        </div>
+    </section>
+
+    <!-- SECCIÓN BANNER GRIS OSCURO (Nosotros) -->
+    <section class="about-banner" id="nosotros">
+        <h2>¿Quiénes Somos?</h2>
+        
+        <!-- RECUADRO DE PROPÓSITO -->
+        <div class="purpose-container">
+            <div class="info-card purpose-card">
+                <h3>Propósito</h3>
+                <p>Contribuir al éxito de nuestros clientes garantizando que sus instalaciones operen de manera segura, eficiente y continua, mediante soluciones de mantenimiento que prevengan fallas, optimicen recursos y generen tranquilidad.</p>
+            </div>
+        </div>
+
+        <!-- TARJETAS DE MISIÓN, VISIÓN Y VALORES -->
+        <div class="cards-container">
+            <div class="info-card">
+                <h3>Misión</h3>
+                <p>En MR brindamos soluciones integrales de mantenimiento preventivo y correctivo para los sectores restaurantero y comercial, asegurando la continuidad operativa de nuestros clientes mediante servicios eficientes, oportunos y con los más altos estándares de calidad. Nos distinguimos por contar con personal altamente capacitado, procesos estandarizados y una atención cercana que fomenta relaciones de confianza, compromiso y mejora continua.</p>
+            </div>
+            
+            <div class="info-card">
+                <h3>Visión</h3>
+                <p>Ser la empresa líder en servicios integrales de mantenimiento a nivel nacional, reconocida por la excelencia en la calidad de nuestros servicios, la innovación de nuestros procesos y el profesionalismo de nuestro equipo. Buscamos convertirnos en el aliado estratégico de mayor confianza para nuestros clientes, contribuyendo a la conservación, funcionalidad y valor de sus instalaciones.</p>
+            </div>
+              
+            <div class="info-card">
+                <h3>Valores</h3>
+                <ul>
+                    <li><strong>Responsabilidad</strong></li>
+                    <li><strong>Integridad</strong></li>
+                    <li><strong>Calidad</strong></li>
+                    <li><strong>Compromiso</strong></li>
+                    <li><strong>Trabajo en Equipo</strong></li>
+                    <li><strong>Innovación</strong></li>
+                    <li><strong>Seguridad</strong></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- === NUEVA SECCIÓN: CLIENTES === -->
+    <section class="clientes-section" id="clientes">
+        <h2>Nuestros Clientes</h2>
+        <div class="cards-container">
+            
+            <div class="info-card">
+                <h3>Bisquets Obregón</h3>
+                <ul>
+                    <li>Sucursal 1 (Ejemplo)</li>
+                    <li>Sucursal 2 (Ejemplo)</li>
+                    <li>Sucursal 3 (Ejemplo)</li>
+                </ul>
+            </div>
+            
+            <div class="info-card">
+                <h3>Sushi Roll</h3>
+                <ul>
+                    <li> Sushi Roll Condesa</li>
+                    <li>Sushi roll Americas</li>
+                    <li>Sushi roll Tlanepantla</li>
+                    <li>Sushi roll Plaza Inn</li>
+                    <li>Sushi roll  Cosmopol</li>
+                    <li>Sushi roll Insurgentes Sears</li>
+                    <li>Sushi roll Polanco</li>
+                    <li>Sushi roll Santa Fe</li>
+                    <li>Sushi roll Patio Revolucion</li>
+                    <li>Sushi roll Buenavista</li>
+                    <li>Sushi roll Altabrisa (Merida, Yucatan)</li>
+                    <li>Sushi roll Galerias (Merida, Yucatan)</li>
+                    
+                </ul>
+            </div>
+              
+            <div class="info-card">
+                <h3>Izakaya Sushi</h3>
+                <ul>
+                    <li>Izakaya Sushi Plaza Tepeyac</li>
+                    <li>Izakaya Sushi Plaza Oceania</li>
+                    <li>Izakaya Sushi Plaza Pedregal</li>
+                    <li>Izakaya Sushi Plaza Miramontes</li>
+                    <li>Izakaya Sushi del Valle</li>
+                    <li>Izakaya Sushi Reforma</li>
+                     <li>Izakaya Sushi Interlomas</li>
+                    <li>Izakaya Sushi Arcos Bosques</li>
+                    <li>Izakaya Sushi Palmas</li>
+                     <li>Izakaya Sushi Amores</li>
+                    <li>Izakaya Sushi Paza Mitikah</li>
+                    <li>Izakaya Sushi Comisariato</li>
+                    <li>Izakaya Sushi Roma</li>
+                    <li>Izakaya Sushi Akropolis (Merida)</li>
+                    <li>Izakaya Sushi Isla Merida</li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SECCIÓN CARRUSEL DE SERVICIOS -->
+    <section class="services-section" id="servicios">
+        <h2>Catálogo de Servicios</h2>
+        <div class="carousel-container">
+            
+            <a href="servicios.html" class="service-card">
+                <img src="Iluminacion.jpg" alt="Instalaciones Eléctricas e Iluminación" class="service-image">
+                <div class="service-info">
+                    <h4>Instalaciones Eléctricas e Iluminación</h4>
+                    <p>Tableros, Control, Iluminación (Interior y Exterior), Cableado, Contactos, etc.</p>
+                </div>
+            </a>
+
+            <a href="servicios.html" class="service-card">
+                <img src="plomeria.jpg" alt="Mantenimiento Hidrosanitario y Plomería" class="service-image">
+                <div class="service-info">
+                    <h4>Mantenimiento Hidrosanitario y Plomería</h4>
+                    <p>Muebles Sanitarios, Red Hidráulica y Gas, Drenaje y Equipos Especiales</p>
+                </div>
+            </a>
+
+            <a href="servicios.html" class="service-card">
+                <img src="Acabado de pintura .jpg" alt="Obra Civil, Acabados y Pintura" class="service-image">
+                <div class="service-info">
+                    <h4>Obra Civil, Acabados y Pintura</h4>
+                    <p>Pintura, Recubrimientos, Albañilería, Superficies, Sellados e Impermeabilización</p>
+                </div>
+            </a>
+
+            <a href="servicios.html" class="service-card">
+                <img src="carpinterias.jpg" alt="Carpintería y Mantenimiento de Mobiliario" class="service-image">
+                <div class="service-info">
+                    <h4>Carpintería y Mantenimiento de Mobiliario</h4>
+                    <p>Reparación de Mobiliario, Puertas, Herrajes y Estructuras de Madera</p>
+                </div>
+            </a>
+
+            <a href="servicios.html" class="service-card">
+                <img src="sistemas de extraccion .jpg" alt="Equipamiento Especial y Sistemas de Extracción" class="service-image">
+                <div class="service-info">
+                    <h4>Equipamiento Especial y Sistemas de Extracción</h4>
+                    <p>Extracción, Ventilación, Soportes y Montajes</p>
+                </div>
+            </a>
+
+            <a href="servicios.html" class="service-card">
+                <img src="seervicios generales.jpg" alt="Logística, Seguridad y Servicios Generales" class="service-image">
+                <div class="service-info">
+                    <h4>Logística, Seguridad y Servicios Generales</h4>
+                    <p>Fletes y Maniobras, Seguridad y Prevención, Sanidad</p>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- === NUEVA SECCIÓN: TRABAJOS REALIZADOS (Catálogo de proyectos) === -->
+    <section class="portfolio-section" id="trabajos">
+        <h2>Trabajos Realizados</h2>
+        <div class="carousel-container">
+            
+          
+
+            <!-- FOTO 2 -->
+            <div class="service-card">
+                <img src="image2.png" alt="Proyecto 2" class="service-image">
+                <div class="service-info">
+                    <h4>PINTURA Y DISEÑO DE IMAGEN</h4>
+                    <p>MANTENIMIENTO Y CORRECCION EN INTERIOR</p>
+                </div>
+            </div>
+
+            <!-- FOTO 3 -->
+            <div class="service-card">
+                <img src="image1.png" alt="Proyecto 3" class="service-image">
+                <div class="service-info">
+                    <h4>ACABADOS PERFECTOS</h4>
+                    <p>REMODELACION DE FACHADA</p>
+                </div>
+            </div>
+
+            <!-- FOTO 4 -->
+            <div class="service-card">
+                <img src="image.png" alt="Proyecto 4" class="service-image">
+                <div class="service-info">
+                    <h4>PLOMERIA</h4>
+                    <p>DE TODO TIPO.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER MODIFICADO -->
+    <footer id="contacto">
+        <div class="contact-info">
+            
+            <!-- Teléfono -->
+            <div class="contact-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span>55 2442 3104</span>
+            </div>
+            
+            <!-- Correo -->
+            <div class="contact-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <span>mantenimientos.mr25@gmail.com</span>
+            </div>
+            
+            <!-- Redes Sociales (Iconos limpios SVG) -->
+            <div class="social-icons">
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/share/1JDoRY79p8/" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z"/>
+                    </svg>
+                </a>
+                
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/mr_mantenimiento1?igsh=MWFlZnJjeDBwOTNyMA==" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                    </svg>
+                </a>
+
+                <!-- TikTok -->
+                <a href="https://www.tiktok.com/@mr_mantenimiento?_r=1&_t=ZS-98RdeiwRL41" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.04.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.22-1.15 4.31-2.91 5.61-1.74 1.31-4.04 1.74-6.13 1.2-2.45-.63-4.47-2.6-5.11-5.07-.63-2.43-.09-5.13 1.48-7.14 1.51-1.95 3.99-3.05 6.43-2.98V12.5c-1.35.03-2.73.57-3.68 1.55-.95.96-1.39 2.38-1.2 3.73.18 1.34 1.05 2.55 2.27 3.1 1.25.57 2.75.56 3.97-.08 1.15-.6 1.95-1.75 2.15-3.03.04-.26.06-.52.06-.78V.02h-.01z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BOTÓN WHATSAPP MODIFICADO AL NÚMERO Y CON TOOLTIP -->
+    <a href="https://wa.me/525524423104" class="whatsapp-btn" target="_blank" rel="noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.1.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+        </svg>
+    </a>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('navMenu');
+            menu.classList.toggle('active');
+        }
+    </script>
+    
+</body>
+</html>
